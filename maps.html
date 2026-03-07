@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQ - Offline Maps</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <h1><i class="fas fa-map"></i> Offline Maps</h1>
+        <p class="tagline">Download regions for zero-connectivity use.</p>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="offline-maps-section">
+        <select id="regionSelect">
+          <option value="">-- Choose Region --</option>
+          <option value="delhi">Delhi NCR</option>
+          <option value="mumbai">Mumbai Metro</option>
+          <option value="bangalore">Bangalore Central</option>
+          <option value="hyderabad">Hyderabad City</option>
+          <option value="chennai">Chennai</option>
+          <option value="kolkata">Kolkata</option>
+          <option value="noida">Noida</option>
+        </select>
+        <button class="btn-download-map" onclick="downloadOfflineMap()">
+          <i class="fas fa-download"></i> Download Map Package
+        </button>
+      </div>
+      <div id="mapDownloadStatus"></div>
+      <div id="offlineMapContainer" class="map-preview"></div>
+    </div>
+
+    <div class="login-footer">
+      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Emergency Home</a>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

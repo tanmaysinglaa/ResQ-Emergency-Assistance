@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQ - Volunteer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <h1><i class="fas fa-hands-helping"></i> Community Hero</h1>
+        <p class="tagline">Register to help people nearby.</p>
+      </div>
+    </header>
+
+    <div class="card helper-card">
+  <h2>Become a Local Helper</h2>
+  <form id="helperForm">
+    <div class="form-group">
+      <input type="text" id="helperName" placeholder="Your Name" required>
+      <input type="tel" id="helperPhone" placeholder="Phone Number" required>
+    </div>
+
+    <label for="helperSkills" class="label-small">
+      What can you provide? <span class="badge-info">Hold Ctrl/Cmd to select multiple</span>
+    </label>
+    
+    <select id="helperSkills" multiple class="multi-select-modern">
+      <option value="fuel">⛽ Provide Fuel</option>
+      <option value="medical">🏥 First Aid / CPR</option>
+      <option value="guidance">🗺️ Local Navigation</option>
+      <option value="breakdown">🔧 Mechanic Tools</option>
+      <option value="water">💧 Water & Food</option>
+      <option value="towing">🚜 Vehicle Towing</option>
+    </select>
+
+    <button type="button" class="btn-location-alt" onclick="getHelperLocation()">
+      <i class="fas fa-map-pin"></i> Set My Availability Zone
+    </button>
+    <div id="helperLocationDisplay"></div>
+    <button type="submit" class="btn-submit btn-green">✅ Activate Volunteer Mode</button>
+  </form>
+  <div id="helperSuccessMessage" class="success-message"></div>
+</div>
+
+    <div class="card">
+        <h2><i class="fas fa-radar"></i> Alerts Near You</h2>
+        <div id="nearbyEmergencies">
+            <p style="color:#666; text-align:center;">Register above to see alerts.</p>
+        </div>
+    </div>
+
+    <div class="login-footer">
+      <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Emergency Home</a>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

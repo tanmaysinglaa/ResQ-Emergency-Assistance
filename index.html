@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQ - Emergency SOS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+  <div id="status-bar" class="status-offline">
+    <span id="status-text"><i class="fas fa-signal"></i> Checking Connectivity...</span>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <h1><i class="fas fa-ambulance"></i> ResQ</h1>
+        <p class="tagline">Emergency Response System</p>
+      </div>
+    </header>
+
+    <div class="card pulse-border">
+      <h2><i class="fas fa-exclamation-triangle"></i> Request Immediate Help</h2>
+      
+      <form id="emergencyForm">
+        <div class="form-group">
+          <input type="text" id="name" placeholder="Full Name" required>
+          <input type="tel" id="phone" placeholder="Phone Number" required>
+        </div>
+        
+        <select id="helpType" required>
+          <option value="" disabled selected>Nature of Emergency</option>
+          <option value="medical">🏥 Medical Emergency</option>
+          <option value="accident">🚗 Accident / Collision</option>
+          <option value="fuel">⛽ Out of Fuel</option>
+          <option value="breakdown">🔧 Vehicle Breakdown</option>
+          <option value="guidance">🗺️ Need Directions</option>
+        </select>
+
+        <textarea id="description" rows="3" placeholder="Details (Location, Injury, etc)..." required></textarea>
+        
+        <div class="location-box">
+          <button type="button" class="btn-location" onclick="getLocation()">
+            <i class="fas fa-location-crosshairs"></i> Get My Location
+          </button>
+          <div id="locationDisplay" class="loc-badge">Location not set</div>
+        </div>
+
+        <button type="button" class="btn-whatsapp" onclick="sendWhatsAppSOS()">
+        <i class="fab fa-whatsapp"></i> SOS to WhatsApp Contacts
+      </button>
+
+        <button type="submit" class="btn-submit">🚨 SEND DISTRESS SIGNAL</button>
+      </form>
+      <div id="successMessage" class="success-message"></div>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-user-friends"></i> Family Speed Dial</h2>
+      <div id="familyList" class="emergency-contacts"></div>
+      <form id="addFamilyForm" class="add-contact-form">
+        <div class="form-group-inline">
+          <input type="text" id="famName" placeholder="Name" required>
+          <input type="tel" id="famPhone" placeholder="Number" required>
+          <button type="submit" class="btn-add-contact"><i class="fas fa-plus"></i></button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-phone-volume"></i> Public Emergency Services</h2>
+      <p class="sub-text">Direct lines to national services.</p>
+      
+      <div class="emergency-contacts">
+        <a href="tel:100" class="contact-card">
+          <i class="fas fa-user-shield" style="font-size: 2em; margin-bottom: 10px; display:block;"></i>
+          <span>Police (100)</span>
+        </a>
+        
+        <a href="tel:108" class="contact-card">
+          <i class="fas fa-ambulance" style="font-size: 2em; margin-bottom: 10px; display:block;"></i>
+          <span>Ambulance (108)</span>
+        </a>
+        
+        <a href="tel:101" class="contact-card">
+          <i class="fas fa-fire-extinguisher" style="font-size: 2em; margin-bottom: 10px; display:block;"></i>
+          <span>Fire Dept (101)</span>
+        </a>
+        
+        <a href="tel:112" class="contact-card" style="border-bottom-color: #667eea; color: #667eea;">
+          <i class="fas fa-globe-asia" style="font-size: 2em; margin-bottom: 10px; display:block;"></i>
+          <span>National SOS (112)</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="grid-row" style="margin-top: 30px;">
+      <a href="maps.html" class="feature-link">
+        <div class="feature-card">
+          <i class="fas fa-map-marked-alt"></i>
+          <span>Offline Maps</span>
+        </div>
+      </a>
+      
+      <a href="volunteer.html" class="feature-link">
+        <div class="feature-card">
+          <i class="fas fa-hand-holding-heart"></i>
+          <span>Join as Helper</span>
+        </div>
+      </a>
+    </div>
+
+    <footer>
+      <p>© 2025 ResQ Assist</p>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
