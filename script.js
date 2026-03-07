@@ -1,20 +1,3 @@
-/* =========================================
-   FIREBASE CONFIGURATION (ADDED FOR CLOUD)
-   ========================================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyDfBzAQQspKKTvN2qrB3vV42Cl4Mvdtnk",
-  authDomain: "resq-e347d.firebaseapp.com",
-  databaseURL: "https://resq-e347d-default-rtdb.firebaseio.com",
-  projectId: "resq-e347d",
-  storageBucket: "resq-e347d.firebasestorage.app",
-  messagingSenderId: "16268656348",
-  appId: "1:16268656348:web:5a4726890477c9d604be19"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-
 /* GLOBAL STATE & CONFIGURATION */
 let latitude = null, longitude = null;
 let helperLatitude = null, helperLongitude = null;
@@ -421,4 +404,5 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
 });
