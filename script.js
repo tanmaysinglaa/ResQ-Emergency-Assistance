@@ -1,15 +1,23 @@
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+/* =========================================
+   1. FIREBASE CONFIGURATION (The Cloud Engine)
+   ========================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyDfBzAQqsPKKTVN2qrB3vV42Cl4M6vdtNk",
+  apiKey: "AIzaSyDfBzAQQspKKTvN2qrB3vV42Cl4Mvdtnk",
   authDomain: "resq-e347d.firebaseapp.com",
   databaseURL: "https://resq-e347d-default-rtdb.firebaseio.com",
   projectId: "resq-e347d",
   storageBucket: "resq-e347d.firebasestorage.app",
   messagingSenderId: "16268656348",
-  appId: "1:16268656348:web:66ebe4f2bf24eab204be19",
-  measurementId: "G-JMRB6RTSKR"
+  appId: "1:16268656348:web:5a4726890477c9d604be19"
 };
-/* GLOBAL STATE & CONFIGURATION */
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* =========================================
+   2. GLOBAL STATE & CONFIGURATION
+   ========================================= */
 let latitude = null, longitude = null;
 let helperLatitude = null, helperLongitude = null;
 let map = null;
@@ -23,19 +31,19 @@ const regionsData = {
   kolkata: { name: 'Kolkata', lat: 22.5726, lng: 88.3639, zoom: 12 },
   chennai: { name: 'Chennai', lat: 13.0827, lng: 80.2707, zoom: 12 },
   noida: { name: 'Noida', lat: 28.5355, lng: 77.3910, zoom: 12 },
+  haryana: { name: 'Haryana Region', lat: 29.0588, lng: 76.0856, zoom: 8 }
 };
 
-/* SYSTEM UTILITIES (Connectivity & Tabs) */
-
-// Monitor Online/Offline Status
+/* =========================================
+   3. SYSTEM UTILITIES (Connectivity & Tabs)
+   ========================================= */
 window.addEventListener('online', updateConnectivityStatus);
 window.addEventListener('offline', updateConnectivityStatus);
 
 function updateConnectivityStatus() {
   const statusBar = document.getElementById('status-bar');
   const statusText = document.getElementById('status-text');
-  
-  if (!statusBar) return; // Guard clause if status bar isn't on this page
+  if (!statusBar) return; 
 
   if (navigator.onLine) {
     statusBar.className = 'status-online';
@@ -46,20 +54,15 @@ function updateConnectivityStatus() {
   }
 }
 
-// Admin Tab Switching Logic
 function showTab(tabId) {
-  // Update UI for active tab
   document.querySelectorAll('.side-nav li').forEach(li => li.classList.remove('active'));
   if(event && event.currentTarget) event.currentTarget.classList.add('active');
-  
-  // Logic to swap content (Mock implementation for visual structure)
-  console.log(`Switched to Admin Tab: ${tabId}`);
   if (tabId === 'requests') loadRequests();
 }
 
-/*GEOLOCATION FUNCTIONS */
-
-// Get user location for Emergency
+/* =========================================
+   4. GEOLOCATION FUNCTIONS
+   ========================================= */
 function getLocation() {
   const display = document.getElementById('locationDisplay');
   if(!display) return;
@@ -86,7 +89,6 @@ function getLocation() {
   );
 }
 
-// Get Helper location
 function getHelperLocation() {
   const display = document.getElementById('helperLocationDisplay');
   if(!display) return;
@@ -99,7 +101,7 @@ function getHelperLocation() {
       helperLongitude = pos.coords.longitude;
       display.innerHTML = `✅ Zone Set: ${helperLatitude.toFixed(5)}, ${helperLongitude.toFixed(5)}`;
       display.style.display = 'block';
-      displayNearbyEmergencies(); // Immediately check for alerts
+      displayNearbyEmergencies(); 
     },
     err => {
       display.innerHTML = '❌ Location access required to help.';
@@ -107,38 +109,33 @@ function getHelperLocation() {
   );
 }
 
-// Distance Calculation (Haversine Formula)
 function calculateDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of earth in km
+  const R = 6371; 
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
   const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon/2) * Math.sin(dLon/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c; // Distance in km
+  return R * c; 
 }
 
-/*FEATURE: WHATSAPP SOS */
+/* =========================================
+   5. FEATURES (WhatsApp, Contacts, Maps)
+   ========================================= */
 function sendWhatsAppSOS() {
-  if (!latitude || !longitude) {
-    alert("⚠️ Please click 'Get My Location' first so we can send your coordinates!");
-    return;
-  }
+  if (!latitude || !longitude) return alert("⚠️ Please click 'Get My Location' first!");
 
   const name = document.getElementById('name') ? document.getElementById('name').value : "User";
   const desc = document.getElementById('description') ? document.getElementById('description').value : "Emergency";
-
-  const message = `🚨 *SOS EMERGENCY* 🚨%0A%0A` +
-                  `👤 *Name:* ${name}%0A` +
-                  `📝 *Note:* ${desc}%0A%0A` +
-                  `📍 *My Live Location:*%0A` +
-                  `https://maps.google.com/?q=${latitude},${longitude}`;
+  
+  // FIXED MAP URL
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+  const message = `🚨 *SOS EMERGENCY* 🚨%0A%0A👤 *Name:* ${name}%0A📝 *Note:* ${desc}%0A%0A📍 *My Live Location:*%0A${mapUrl}`;
 
   window.open(`https://wa.me/?text=${message}`, '_blank');
 }
 
-/* FEATURE: FAMILY SPEED DIAL*/
 function loadFamilyContacts() {
   const list = document.getElementById('familyList');
   if(!list) return;
@@ -179,15 +176,11 @@ function deleteFamilyContact(id) {
   loadFamilyContacts();
 }
 
-/*FEATURE: OFFLINE MAPS*/
 function downloadOfflineMap() {
   const region = document.getElementById('regionSelect').value;
   const status = document.getElementById('mapDownloadStatus');
   
-  if (!region) {
-    status.innerHTML = '⚠️ Please select a region first.';
-    return;
-  }
+  if (!region) return status.innerHTML = '⚠️ Please select a region first.';
   
   status.innerHTML = '⏳ Downloading map packages (Simulation)...';
   status.style.color = '#f59e0b';
@@ -197,11 +190,9 @@ function downloadOfflineMap() {
     status.innerHTML = `✅ ${regionsData[region].name} downloaded securely!`;
     status.style.color = '#10b981';
     
-    // Render Leaflet Map
     const container = document.getElementById('offlineMapContainer');
     container.style.display = 'block';
     
-    // Cleanup old map instance if exists
     if (map) { map.off(); map.remove(); }
     
     map = L.map('offlineMapContainer').setView([regionsData[region].lat, regionsData[region].lng], regionsData[region].zoom);
@@ -212,22 +203,22 @@ function downloadOfflineMap() {
   }, 1500);
 }
 
-/*HELPER & ALERTS LOGIC (UPDATED FOR CLOUD)*/
+/* =========================================
+   6. CLOUD SYNC: HELPER & ALERTS LOGIC 
+   ========================================= */
 function displayNearbyEmergencies() {
   const container = document.getElementById('nearbyEmergencies');
-  if (!container) return; // Only runs on pages with this container
+  if (!container) return; 
 
   if (!helperLatitude || !helperLongitude) {
     container.innerHTML = '<p class="sub-text" style="text-align:center">📍 Set your location above to scan for alerts.</p>';
     return;
   }
 
-  // Pulls live from Firebase instead of local cache
   db.ref('emergencyRequests').once('value', (snapshot) => {
     const data = snapshot.val();
     const requests = data ? Object.values(data) : [];
     
-    // Filter for requests within 10km
     const nearby = requests.filter(r => 
       calculateDistance(helperLatitude, helperLongitude, r.latitude, r.longitude) <= 10
     ).sort((a,b) => 
@@ -242,9 +233,9 @@ function displayNearbyEmergencies() {
 
     container.innerHTML = nearby.map(r => {
       const dist = calculateDistance(helperLatitude, helperLongitude, r.latitude, r.longitude).toFixed(1);
-      // Determine icon based on type
       const icons = {fuel:'⛽', medical:'🏥', guidance:'🗺️', breakdown:'🔧', accident:'🚗'};
       const icon = icons[r.helpType] || '🆘';
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}`;
       
       return `
         <div class="emergency-alert" style="background:#fff3cd; border-left:4px solid orange; padding:15px; margin-bottom:10px; border-radius:8px;">
@@ -255,7 +246,7 @@ function displayNearbyEmergencies() {
           <p><strong>${r.name}</strong>: "${r.description}"</p>
           <div style="margin-top:8px;">
              <a href="tel:${r.phone}" class="btn-location" style="display:inline-block; padding:5px 10px; background:#25D366; text-decoration:none;">📞 Call</a>
-             <a href="https://maps.google.com/?q=${r.latitude},${r.longitude}" target="_blank" class="btn-location" style="display:inline-block; padding:5px 10px; text-decoration:none;">📍 Map</a>
+             <a href="${mapUrl}" target="_blank" class="btn-location" style="display:inline-block; padding:5px 10px; text-decoration:none;">📍 Map</a>
           </div>
         </div>
       `;
@@ -263,17 +254,17 @@ function displayNearbyEmergencies() {
   });
 }
 
-/*ADMIN DASHBOARD LOGIC (UPDATED TO LIVE LISTENER)*/
+/* =========================================
+   7. CLOUD SYNC: ADMIN DASHBOARD LOGIC
+   ========================================= */
 function loadRequests() {
   const list = document.getElementById('requestsList');
   if(!list) return;
 
-  // Real-time listener for the Admin Dashboard
   db.ref('emergencyRequests').on('value', (snapshot) => {
     const data = snapshot.val();
     const requests = data ? Object.values(data) : [];
 
-    // Update Stats Counters
     if(document.getElementById('totalRequests')) {
         document.getElementById('totalRequests').innerText = requests.length;
         document.getElementById('fuelRequests').innerText = requests.filter(r => r.helpType === 'fuel').length;
@@ -286,42 +277,45 @@ function loadRequests() {
       return;
     }
 
-    list.innerHTML = requests.reverse().map(r => `
-      <div class="request-item ${r.helpType}">
+    list.innerHTML = requests.reverse().map(r => {
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${r.latitude},${r.longitude}`;
+      return `
+      <div class="request-item ${r.helpType}" style="background:white; padding:15px; border-radius:8px; border-left:4px solid var(--danger); box-shadow:0 2px 4px rgba(0,0,0,0.1);">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span class="type-badge">${r.helpType.toUpperCase()}</span>
+          <span class="type-badge" style="font-weight:bold;">${r.helpType.toUpperCase()}</span>
           <span style="color:#666; font-size:0.85rem;">${r.timestamp}</span>
         </div>
         <h3 style="margin-bottom:5px;">${r.name}</h3>
         <p style="margin-bottom:5px;"><i class="fas fa-phone"></i> ${r.phone}</p>
         <p class="desc" style="font-style:italic; color:#444;">"${r.description}"</p>
-        <div class="request-actions">
-          <a href="https://maps.google.com/?q=${r.latitude},${r.longitude}" target="_blank" class="btn-map-link">
+        <div class="request-actions" style="margin-top:10px;">
+          <a href="${mapUrl}" target="_blank" style="color:white; background:var(--primary); padding:8px 12px; border-radius:6px; text-decoration:none; display:inline-block;">
             <i class="fas fa-directions"></i> Navigate to Location
           </a>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   });
 }
 
 function logout() {
-  // Simple logout simulation
   window.location.href = 'index.html';
 }
 
 function clearAllRequests() {
   if (confirm("⚠️ Are you sure you want to WIPE all emergency records? This cannot be undone.")) {
-    db.ref('emergencyRequests').remove(); // Deletes from Firebase Cloud
+    db.ref('emergencyRequests').remove(); 
   }
 }
 
-/*INITIALIZATION (DOM Ready)*/
+/* =========================================
+   8. INITIALIZATION (DOM Ready Handlers)
+   ========================================= */
 document.addEventListener('DOMContentLoaded', () => {
   updateConnectivityStatus();
-  loadFamilyContacts(); // Load contacts on any page they might appear
+  loadFamilyContacts(); 
   
-  // A. Emergency Form Handler (index.html) -> PUSHES TO CLOUD
+  // A. Emergency Form Handler -> PUSHES TO CLOUD
   const emergencyForm = document.getElementById('emergencyForm');
   if (emergencyForm) {
     emergencyForm.addEventListener('submit', e => {
@@ -338,7 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
         timestamp: new Date().toLocaleString()
       };
 
-      // Push to Firebase instead of localStorage
       db.ref('emergencyRequests').push(request).then(() => {
         const success = document.getElementById('successMessage');
         success.innerHTML = `<strong>Signal Broadcasted to Cloud!</strong><br>Ref ID: ${request.id}`;
@@ -349,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // B. Family Contact Form Handler (index.html)
+  // B. Family Contact Form Handler
   const addFamilyForm = document.getElementById('addFamilyForm');
   if(addFamilyForm) {
     addFamilyForm.addEventListener('submit', function(e) {
@@ -363,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // C. Volunteer/Helper Form Handler (volunteer.html)
+  // C. Volunteer Form Handler -> PUSHES TO CLOUD
   const helperForm = document.getElementById('helperForm');
   if (helperForm) {
     helperForm.addEventListener('submit', e => {
@@ -379,24 +372,19 @@ document.addEventListener('DOMContentLoaded', () => {
         registeredAt: new Date().toLocaleString()
       };
       
-      const helpers = JSON.parse(localStorage.getItem('localHelpers') || '[]');
-      helpers.push(helper);
-      localStorage.setItem('localHelpers', JSON.stringify(helpers));
-      
-      const msg = document.getElementById('helperSuccessMessage');
-      msg.innerHTML = '✅ Registered as Volunteer! Scanning area...';
-      msg.classList.add('show');
-      e.target.reset();
-      
-      // Start polling for emergencies
-      displayNearbyEmergencies();
+      db.ref('activeHelpers').push(helper).then(() => {
+        const msg = document.getElementById('helperSuccessMessage');
+        msg.innerHTML = '✅ Registered as Volunteer! Scanning area...';
+        msg.classList.add('show');
+        e.target.reset();
+        displayNearbyEmergencies();
+      });
     });
     
-    // Poll for emergencies every 10 seconds if on volunteer page
     setInterval(displayNearbyEmergencies, 10000);
   }
 
-  // D. Admin Login Logic (admin.html)
+  // D. Admin Login Logic
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', e => {
@@ -405,16 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const errorMsg = document.getElementById('loginError');
 
       if (pass === ADMIN_PASSWORD) {
-        // Switch View
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'flex';
-        loadRequests(); // Initiates the live cloud listener
+        loadRequests(); 
       } else {
-        errorMsg.style.display = 'flex'; // Show error pill
+        errorMsg.style.display = 'flex'; 
         setTimeout(() => errorMsg.style.display = 'none', 3000);
       }
     });
   }
-
 });
-
