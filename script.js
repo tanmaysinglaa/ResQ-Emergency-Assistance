@@ -1,3 +1,14 @@
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDfBzAQqsPKKTVN2qrB3vV42Cl4M6vdtNk",
+  authDomain: "resq-e347d.firebaseapp.com",
+  databaseURL: "https://resq-e347d-default-rtdb.firebaseio.com",
+  projectId: "resq-e347d",
+  storageBucket: "resq-e347d.firebasestorage.app",
+  messagingSenderId: "16268656348",
+  appId: "1:16268656348:web:66ebe4f2bf24eab204be19",
+  measurementId: "G-JMRB6RTSKR"
+};
 /* GLOBAL STATE & CONFIGURATION */
 let latitude = null, longitude = null;
 let helperLatitude = null, helperLongitude = null;
@@ -406,3 +417,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
